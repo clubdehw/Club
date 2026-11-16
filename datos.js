@@ -16,7 +16,7 @@
 const CLUB = {
   whatsapp: "5491153184755",              // número completo, sin + ni espacios
   whatsappVisible: "+54 9 11 5318-4755",
-  mail: "hernanwuestok@gmail.com",
+  mail: "clubdecorrespondenciahw@gmail.com",
   tiktok: "hernanwuestok",
   instagram: "hernanwuest",
   precioARS: 4999,                        // precio general en pesos
