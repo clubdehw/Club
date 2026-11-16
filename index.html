@@ -462,7 +462,6 @@ const ARTE = {
   carnaval: `<img src="fila3.png" alt="Fila 3, asiento 14" style="width:100%; height:100%; object-fit:cover; display:block;">`,
   buzon: `<img src="buzon.png" alt="El buzón del tercero" style="width:100%; height:100%; object-fit:cover; display:block;">`
 };
-
 const tapa = (h, cinta) => `<div class="tapa">${ARTE[h.arte] || ARTE.camara}${cinta ? `<span class="cinta">${esc(cinta)}</span>` : ""}</div>`;
 const claves = (h) => `<ul class="claves" aria-label="Géneros y palabras clave">${h.claves.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>`;
 
