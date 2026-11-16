@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Club de Correspondencia de Hernán Wuest</title>
+<meta name="description" content="Un club de ficción por correspondencia: cada día te llega un mail con una carta escrita para vos y documentos para armar la historia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Figtree:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Idea: correo aéreo. Papel frío, tinta índigo, sello coral, un amarillo que salta. Texto a la izquierda, sello a la derecha. */
+  --papel: #f3f5fb;
+  --blanco: #ffffff;
+  --tinta: #171a3f;
+  --tinta-suave: #515580;
+  --sello: #ff4a3d;
+  --aire: #2d5bff;
+  --sol: #ffc83d;
+  --linea: #dfe3f3;
+  --display: "Fraunces", Georgia, "Times New Roman", serif;
+  --cuerpo: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --maquina: "Special Elite", "Courier New", Courier, monospace;
+  --radio: 14px;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--papel); color: var(--tinta); font-family: var(--cuerpo); font-size: 17px; line-height: 1.55; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.08; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--aire); outline-offset: 3px; border-radius: 6px; }
+.ancho { width: min(1080px, 100% - 36px); margin-inline: auto; }
+.franja { height: 10px; background: repeating-linear-gradient(-45deg, var(--sello) 0 14px, var(--blanco) 14px 28px, var(--aire) 28px 42px, var(--blanco) 42px 56px); }
+.rotulo { font-family: var(--maquina); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--sello); }
+
+/* Encabezado */
+.cab { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--papel) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--linea); }
+.cab .ancho { display: flex; align-items: center; gap: 14px; padding: 10px 0; }
+.marca { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--display); font-weight: 800; font-size: 17px; line-height: 1.05; }
+.marca small { display: block; font-family: var(--cuerpo); font-weight: 500; font-size: 12px; color: var(--tinta-suave); }
+.marca svg { width: 38px; height: 38px; flex: none; }
+.nav { margin-left: auto; display: flex; gap: 14px; font-size: 14.5px; font-weight: 600; }
+.nav a { text-decoration: none; padding: 6px 2px; border-bottom: 2px solid transparent; white-space: nowrap; }
+.nav a:hover { border-color: var(--sello); }
+.btn-carrito { display: flex; align-items: center; gap: 8px; border: 2px solid var(--tinta); background: var(--blanco); color: var(--tinta); border-radius: 999px; padding: 7px 14px; font-weight: 700; font-size: 15px; }
+.btn-carrito b { background: var(--sello); color: #fff; border-radius: 999px; min-width: 22px; height: 22px; display: inline-grid; place-items: center; font-size: 13px; padding: 0 6px; }
+@media (max-width: 1100px) { .nav { display: none; } .btn-carrito { margin-left: auto; } }
+
+/* Portada */
+.portada { padding: 44px 0 52px; }
+.portada .ancho { display: grid; grid-template-columns: 1.15fr .85fr; gap: 36px; align-items: center; }
+.portada h1 { font-size: clamp(38px, 6.2vw, 66px); font-weight: 800; letter-spacing: -.02em; margin: 14px 0 18px; }
+.portada h1 em { font-style: italic; font-weight: 600; color: var(--sello); }
+.portada .bajada { font-size: 19px; max-width: 34em; color: var(--tinta-suave); }
+.acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 2px solid var(--tinta); border-radius: 999px; padding: 12px 22px; font-weight: 700; text-decoration: none; background: var(--blanco); color: var(--tinta); transition: transform .12s, box-shadow .12s; box-shadow: 4px 4px 0 var(--tinta); }
+.btn:hover { transform: translate(-1px, -1px); box-shadow: 6px 6px 0 var(--tinta); }
+.btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--tinta); }
+.btn.fuerte { background: var(--sello); color: #fff; }
+.btn.sol { background: var(--sol); }
+.btn.chico { padding: 8px 16px; font-size: 15px; box-shadow: 3px 3px 0 var(--tinta); }
+.btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
+
+/* Logo con efecto */
+.logo { position: relative; width: min(360px, 82vw); aspect-ratio: 1; margin-inline: auto; }
+.logo svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.logo .anillo { transform-origin: 200px 200px; animation: girar 38s linear infinite; }
+.logo .sellazo { transform-origin: 200px 200px; animation: sellar .7s cubic-bezier(.2, 1.6, .4, 1) .15s backwards; }
+.logo .ondas path { stroke-dasharray: 260; animation: trazar 1.2s ease-out .7s backwards; }
+.logo .carta { animation: asomar 1s cubic-bezier(.2, .9, .3, 1) .55s backwards; }
+.logo .solapa { transform-origin: 200px 172px; animation: abrir .8s ease-out .35s backwards; }
+@keyframes girar { to { transform: rotate(360deg); } }
+@keyframes sellar { from { transform: scale(1.5) rotate(-18deg); opacity: 0; } }
+@keyframes trazar { from { stroke-dashoffset: 260; } to { stroke-dashoffset: 0; } }
+@keyframes asomar { from { transform: translateY(46px); } }
+@keyframes abrir { from { transform: scaleY(-1); } }
+@media (prefers-reduced-motion: reduce) { .logo * { animation: none !important; } html { scroll-behavior: auto; } .btn { transition: none; } }
+@media (max-width: 820px) { .portada .ancho { grid-template-columns: 1fr; } .portada { padding-top: 26px; } .logo { order: -1; width: min(250px, 66vw); } }
+
+/* Secciones */
+section { padding: 54px 0; scroll-margin-top: 64px; }
+.titulo-sec { display: grid; gap: 8px; margin-bottom: 26px; max-width: 40em; }
+.titulo-sec h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; }
+.titulo-sec p { color: var(--tinta-suave); }
+.blanca { background: var(--blanco); border-block: 1px solid var(--linea); }
+
+.pasos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; counter-reset: paso; list-style: none; padding: 0; margin: 0; }
+.pasos li { counter-increment: paso; background: var(--papel); border: 1px solid var(--linea); border-radius: var(--radio); padding: 18px; display: grid; gap: 6px; align-content: start; }
+.pasos li::before { content: counter(paso); font-family: var(--display); font-weight: 800; font-size: 34px; color: var(--sello); line-height: 1; }
+.pasos h3 { font-size: 19px; }
+.pasos p { font-size: 15.5px; color: var(--tinta-suave); }
+@media (max-width: 820px) { .pasos { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 460px) { .pasos { grid-template-columns: 1fr; } }
+
+/* Destacado */
+.destacado { display: grid; grid-template-columns: .9fr 1.1fr; background: var(--blanco); border: 2px solid var(--tinta); border-radius: 20px; overflow: hidden; box-shadow: 8px 8px 0 var(--tinta); }
+.tapa { position: relative; min-height: 300px; }
+.tapa svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cinta { position: absolute; left: 14px; top: 14px; background: var(--sol); border: 2px solid var(--tinta); border-radius: 999px; padding: 4px 12px; font-weight: 700; font-size: 13px; }
+.dest-cuerpo { padding: 26px 26px 24px; display: grid; gap: 14px; align-content: start; }
+.dest-cuerpo h3 { font-size: clamp(30px, 4.4vw, 44px); font-weight: 800; }
+.dest-cuerpo .gancho { font-family: var(--display); font-style: italic; font-weight: 600; font-size: 20px; color: var(--sello); }
+.claves { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.claves li { border: 1.5px solid var(--tinta); border-radius: 999px; padding: 2px 11px; font-size: 13.5px; font-weight: 600; background: var(--papel); }
+.trae { margin: 0; padding-left: 20px; display: grid; gap: 3px; font-size: 16px; }
+.trae li::marker { color: var(--sello); }
+.subt { font-family: var(--maquina); font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--tinta-suave); margin-bottom: 4px; }
+.aviso { font-size: 14px; color: var(--tinta-suave); border-left: 3px solid var(--sol); padding-left: 10px; }
+.precio { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; border-top: 1px dashed var(--linea); padding-top: 16px; }
+.precio .num { font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.precio small { display: block; font-size: 13.5px; color: var(--tinta-suave); }
+details.fragmento { border: 1px dashed var(--tinta-suave); border-radius: 10px; padding: 10px 14px; }
+details.fragmento summary { cursor: pointer; font-weight: 700; }
+details.fragmento p { font-family: var(--maquina); font-size: 15px; line-height: 1.6; margin-top: 10px; white-space: pre-line; }
+@media (max-width: 820px) { .destacado { grid-template-columns: 1fr; } .tapa { min-height: 220px; } .dest-cuerpo { padding: 20px 18px; } }
+
+/* Tarjetas */
+.grilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; }
+.tarjeta { background: var(--blanco); border: 2px solid var(--tinta); border-radius: 16px; overflow: hidden; display: grid; grid-template-rows: 150px 1fr; }
+.tarjeta .tapa { min-height: 0; }
+.tarjeta .cuerpo { padding: 16px 16px 18px; display: grid; gap: 10px; align-content: start; }
+.tarjeta h3 { font-size: 25px; font-weight: 800; }
+.tarjeta .res { font-size: 15.5px; color: var(--tinta-suave); }
+.tarjeta .pie { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
+.tarjeta .dur { font-size: 14px; font-weight: 600; }
+.vacio { border: 2px dashed var(--linea); border-radius: 16px; padding: 26px; color: var(--tinta-suave); background: var(--blanco); max-width: 44em; }
+
+/* Carta de prueba */
+.prueba { display: grid; grid-template-columns: .8fr 1.2fr; gap: 34px; align-items: start; }
+.prueba h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; margin: 8px 0 12px; }
+.prueba .nota { margin-top: 10px; }
+.carta-papel { background: var(--papel); border: 2px solid var(--tinta); border-radius: 6px; padding: 30px 28px 26px; font-family: var(--maquina); font-size: 15.5px; line-height: 1.65; box-shadow: 8px 8px 0 var(--tinta); transform: rotate(.6deg); position: relative; }
+.carta-papel::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 8px; background: repeating-linear-gradient(-45deg, var(--sello) 0 12px, var(--blanco) 12px 24px, var(--aire) 24px 36px, var(--blanco) 36px 48px); }
+.carta-papel h3 { font-family: var(--maquina); font-weight: 400; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--sello); margin-bottom: 14px; }
+.carta-papel p { margin-bottom: 1em; }
+.carta-papel .firma { font-family: var(--display); font-style: italic; font-weight: 600; font-size: 19px; margin: 18px 0 0; }
+@media (max-width: 820px) { .prueba { grid-template-columns: 1fr; } .carta-papel { padding: 26px 18px 20px; transform: none; box-shadow: 5px 5px 0 var(--tinta); } }
+
+/* Comentarios */
+.coment { margin: 0; background: var(--blanco); border: 2px solid var(--tinta); border-radius: 16px; padding: 18px; display: grid; gap: 10px; align-content: start; }
+.coment blockquote { margin: 0; font-family: var(--display); font-weight: 600; font-size: 19px; line-height: 1.35; }
+.coment figcaption { font-weight: 700; font-size: 15px; }
+.coment figcaption span { display: block; font-weight: 500; font-size: 13.5px; color: var(--tinta-suave); }
+#comentarios .acciones { margin-top: 20px; }
+
+/* Comunidad */
+.comunidad { display: grid; grid-template-columns: 1.2fr .8fr; gap: 30px; align-items: center; }
+.comunidad h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; margin-bottom: 12px; }
+.comunidad p + p { margin-top: 10px; }
+.redes { display: grid; gap: 10px; }
+.red { display: flex; align-items: center; gap: 12px; text-decoration: none; background: var(--papel); border: 2px solid var(--tinta); border-radius: 14px; padding: 12px 16px; font-weight: 700; }
+.red span { display: block; font-weight: 500; font-size: 14px; color: var(--tinta-suave); }
+.red i { font-style: normal; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--tinta); color: #fff; font-family: var(--display); font-weight: 800; flex: none; }
+@media (max-width: 820px) { .comunidad { grid-template-columns: 1fr; } }
+
+/* Preguntas */
+.faq { display: grid; gap: 10px; max-width: 46em; }
+.faq details { background: var(--blanco); border: 1px solid var(--linea); border-radius: 12px; padding: 14px 16px; }
+.faq summary { cursor: pointer; font-weight: 700; }
+.faq p { margin-top: 8px; color: var(--tinta-suave); }
+
+/* Pie */
+footer { background: var(--tinta); color: #fff; padding: 36px 0 30px; }
+footer .ancho { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 26px; }
+footer h3 { font-size: 20px; margin-bottom: 8px; }
+footer p, footer a { font-size: 15px; color: #d7daf2; }
+footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+footer .copy { grid-column: 1 / -1; border-top: 1px solid #353a6e; padding-top: 14px; font-size: 13px; color: #a9add6; }
+@media (max-width: 820px) { footer .ancho { grid-template-columns: 1fr; } }
+
+/* Carrito */
+.velo { position: fixed; inset: 0; background: rgba(23, 26, 63, .55); z-index: 40; }
+.panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(480px, 100%); background: var(--papel); z-index: 41; display: flex; flex-direction: column; border-left: 2px solid var(--tinta); }
+.panel header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--blanco); border-bottom: 1px solid var(--linea); }
+.panel header h2 { font-size: 24px; font-weight: 800; }
+.cerrar { border: 2px solid var(--tinta); background: var(--blanco); border-radius: 999px; width: 38px; height: 38px; font-weight: 700; }
+.panel .contenido { overflow-y: auto; padding: 18px; display: grid; gap: 18px; align-content: start; }
+.bloque { background: var(--blanco); border: 1px solid var(--linea); border-radius: 14px; padding: 16px; display: grid; gap: 12px; }
+.bloque h3 { font-size: 19px; display: flex; gap: 8px; align-items: baseline; }
+.bloque h3 b { color: var(--sello); font-family: var(--display); }
+.item { display: flex; gap: 10px; align-items: center; justify-content: space-between; border-bottom: 1px dashed var(--linea); padding-bottom: 10px; }
+.item:last-of-type { border-bottom: 0; padding-bottom: 0; }
+.item strong { display: block; }
+.item span { font-size: 14px; color: var(--tinta-suave); }
+.quitar { border: 0; background: none; color: var(--sello); font-weight: 700; text-decoration: underline; padding: 4px; }
+.total { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; }
+.total b { font-family: var(--display); font-size: 28px; font-variant-numeric: tabular-nums; }
+.opciones { display: grid; gap: 8px; }
+.opciones label { display: flex; gap: 10px; align-items: flex-start; border: 2px solid var(--linea); border-radius: 12px; padding: 10px 12px; cursor: pointer; }
+.opciones label:has(input:checked) { border-color: var(--tinta); background: var(--papel); }
+.opciones span { font-size: 14px; color: var(--tinta-suave); display: block; }
+.campo { display: grid; gap: 4px; }
+.campo label { font-weight: 600; font-size: 14.5px; }
+.campo input { font: inherit; padding: 10px 12px; border: 2px solid var(--linea); border-radius: 10px; background: var(--blanco); color: var(--tinta); width: 100%; }
+.campo input:focus { border-color: var(--tinta); outline: none; }
+.dos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.check { display: flex; gap: 10px; align-items: center; font-weight: 600; font-size: 15px; }
+.nota { font-size: 14px; color: var(--tinta-suave); }
+.error { color: #b3261e; font-weight: 600; font-size: 14.5px; }
+textarea.pedido { font-family: var(--maquina); font-size: 13.5px; line-height: 1.5; width: 100%; min-height: 190px; border: 2px dashed var(--tinta-suave); border-radius: 10px; padding: 10px; background: var(--papel); color: var(--tinta); resize: vertical; }
+.enviar { display: grid; gap: 10px; }
+.enviar .btn { width: 100%; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="franja" aria-hidden="true"></div>
+
+<header class="cab">
+  <div class="ancho">
+    <a class="marca" href="#arriba" data-ir="arriba">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#ff4a3d"/><rect x="9" y="13" width="22" height="15" rx="2" fill="#fff"/><path d="M9 14l11 8 11-8" fill="none" stroke="#171a3f" stroke-width="2"/></svg>
+      <span>Club de Correspondencia<small>de Hernán Wuest</small></span>
+    </a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#como-funciona" data-ir="como-funciona">Cómo funciona</a>
+      <a href="#entrega-actual" data-ir="entrega-actual">Entrega actual</a>
+      <a href="#carta-de-prueba" data-ir="carta-de-prueba">Carta de prueba</a>
+      <a href="#proximas" data-ir="proximas">Próximas</a>
+      <a href="#anteriores" data-ir="anteriores">Anteriores</a>
+      <a href="#comentarios" data-ir="comentarios">Comentarios</a>
+      <a href="#preguntas" data-ir="preguntas">Preguntas</a>
+    </nav>
+    <button class="btn-carrito" id="abrir-carrito" type="button" aria-haspopup="dialog">Carrito <b id="cuenta">0</b></button>
+  </div>
+</header>
+
+<main id="arriba">
+  <div class="portada">
+    <div class="ancho">
+      <div>
+        <p class="rotulo">Club de ficción por mail</p>
+        <h1>Historias que te escriben <em>a vos</em>.</h1>
+        <p class="bajada">Durante varios días seguidos recibís un mail con una carta escrita para vos y documentos adjuntos: fotos, recortes, papeles que alguien guardó. No leés la historia desde afuera. Estás adentro.</p>
+        <div class="acciones">
+          <a class="btn fuerte" href="#entrega-actual" data-ir="entrega-actual">Ver la entrega del mes</a>
+          <a class="btn" href="#como-funciona" data-ir="como-funciona">Cómo funciona</a>
+        </div>
+      </div>
+      <div class="logo" role="img" aria-label="Logo del Club de Correspondencia de Hernán Wuest">
+        <svg viewBox="0 0 400 400">
+          <defs><path id="circ" d="M200 200m-158 0a158 158 0 1 1 316 0a158 158 0 1 1-316 0"/></defs>
+          <g class="sellazo">
+            <circle cx="200" cy="200" r="190" fill="#fff" stroke="#171a3f" stroke-width="5"/>
+            <circle cx="200" cy="200" r="176" fill="none" stroke="#ff4a3d" stroke-width="3" stroke-dasharray="3 9"/>
+            <g class="anillo">
+              <text font-family="Fraunces, Georgia, serif" font-weight="800" font-size="27" letter-spacing="5.2" fill="#171a3f"><textPath href="#circ">CLUB DE CORRESPONDENCIA ✶ DE HERNÁN WUEST ✶ </textPath></text>
+            </g>
+            <circle cx="200" cy="200" r="126" fill="#ffc83d" stroke="#171a3f" stroke-width="4"/>
+            <g class="carta"><rect x="142" y="120" width="116" height="92" rx="4" fill="#fff" stroke="#171a3f" stroke-width="4"/>
+              <g stroke="#2d5bff" stroke-width="4" stroke-linecap="round"><line x1="158" y1="142" x2="242" y2="142"/><line x1="158" y1="158" x2="228" y2="158"/><line x1="158" y1="174" x2="236" y2="174"/></g></g>
+            <path d="M118 172h164v96a8 8 0 0 1-8 8H126a8 8 0 0 1-8-8z" fill="#ff4a3d" stroke="#171a3f" stroke-width="4"/>
+            <path d="M118 268l62-52M282 268l-62-52" stroke="#171a3f" stroke-width="4" fill="none"/>
+            <path class="solapa" d="M118 172l82 62 82-62z" fill="#ff7468" stroke="#171a3f" stroke-width="4" stroke-linejoin="round"/>
+            <circle cx="200" cy="236" r="19" fill="#171a3f"/><text x="200" y="243" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="800" font-size="18" fill="#ffc83d">HW</text>
+            <g class="ondas" fill="none" stroke="#171a3f" stroke-width="4" stroke-linecap="round"><path d="M92 300q14-12 28 0t28 0 28 0 28 0 28 0 28 0 28 0 28 0"/><path d="M110 318q12-10 24 0t24 0 24 0 24 0 24 0 24 0 24 0"/></g>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <section id="como-funciona" class="blanca">
+    <div class="ancho">
+      <div class="titulo-sec">
+        <p class="rotulo">Cómo funciona</p>
+        <h2>Mitad club literario, mitad club de correspondencia</h2>
+        <p>Cada historia dura entre once y quince días. La idea es simple: leer ficción como si te estuviera pasando, y después tener con quién comentarla.</p>
+      </div>
+      <ol class="pasos">
+        <li><h3>Elegís una historia</h3><p>La entrega del mes o cualquiera de las anteriores.</p></li>
+        <li><h3>Pagás y avisás</h3><p>Con Mercado Pago o PayPal. Mandás el comprobante por WhatsApp o mail y elegís qué día empezar.</p></li>
+        <li><h3>Te llega un mail por día</h3><p>Una carta escrita para vos y documentos adjuntos que ayudan a entender qué pasó.</p></li>
+        <li><h3>Armás el final</h3><p>Guardás las pistas, sacás tus conclusiones y las compartís con el resto del club.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="entrega-actual">
+    <div class="ancho">
+      <div class="titulo-sec">
+        <p class="rotulo">Entrega actual</p>
+        <h2>El destacado del mes</h2>
+      </div>
+      <div id="zona-actual"></div>
+    </div>
+  </section>
+
+  <section id="carta-de-prueba" class="blanca">
+    <div class="ancho prueba">
+      <div>
+        <p class="rotulo">Carta de prueba</p>
+        <h2>Así se siente recibir una</h2>
+        <p>Esta carta es de regalo. Pertenece a una historia que todavía no salió, y está escrita como todas las del club: para vos.</p>
+        <p class="nota" id="prueba-nota"></p>
+        <div class="acciones"><a class="btn sol" id="prueba-aviso" target="_blank" rel="noopener">Quiero saber cómo sigue</a></div>
+      </div>
+      <article class="carta-papel" id="zona-prueba"></article>
+    </div>
+  </section>
+
+  <section id="proximas">
+    <div class="ancho">
+      <div class="titulo-sec">
+        <p class="rotulo">Próximas entregas</p>
+        <h2>Lo que viene</h2>
+        <p>Podés pedir que te avisemos el día que sale cada una.</p>
+      </div>
+      <div class="grilla" id="zona-proximas"></div>
+    </div>
+  </section>
+
+  <section id="anteriores" class="blanca">
+    <div class="ancho">
+      <div class="titulo-sec">
+        <p class="rotulo">Entregas anteriores</p>
+        <h2>Las que ya pasaron</h2>
+        <p>Siguen disponibles: empezás a recibirlas el día que elijas.</p>
+      </div>
+      <div class="grilla" id="zona-anteriores"></div>
+    </div>
+  </section>
+
+  <section id="comentarios">
+    <div class="ancho">
+      <div class="titulo-sec">
+        <p class="rotulo">Comentarios</p>
+        <h2>Lo que dicen en el club</h2>
+        <p>Lectores que ya recibieron sus cartas y gente que está esperando la próxima entrega.</p>
+      </div>
+      <div class="grilla" id="zona-comentarios"></div>
+      <div class="acciones"><a class="btn" id="comentar" target="_blank" rel="noopener">Dejar mi comentario</a></div>
+    </div>
+  </section>
+
+  <section class="blanca">
+    <div class="ancho comunidad">
+      <div>
+        <p class="rotulo">La comunidad</p>
+        <h2>Un club de gente que ama las historias</h2>
+        <p>Escribo cada entrega pensando en quien la va a recibir. Por eso las cartas te hablan a vos, y por eso los adjuntos se pueden imprimir, recortar y guardar.</p>
+        <p>En las redes del club comentamos teorías, mostramos cómo quedó cada rompecabezas armado y adelantamos lo que viene. Sin spoilers.</p>
+      </div>
+      <div class="redes" id="zona-redes"></div>
+    </div>
+  </section>
+
+  <section id="preguntas">
+    <div class="ancho">
+      <div class="titulo-sec">
+        <p class="rotulo">Preguntas frecuentes</p>
+        <h2>Antes de sumarte</h2>
+      </div>
+      <div class="faq">
+        <details><summary>¿Cuándo empiezo a recibir los mails?</summary><p>El día que elijas al hacer el pedido, a partir del día siguiente a la compra. Desde ahí te llega un mail por día, sin saltear ninguno, hasta que termina la historia.</p></details>
+        <details><summary>¿Qué trae cada mail?</summary><p>Una carta y uno o más documentos en PDF: fotos, recortes, notas, mapas. Se pueden leer en el teléfono o imprimir en una hoja A4.</p></details>
+        <details><summary>¿Hace falta imprimir?</summary><p>No. Todo se lee bien en pantalla. Si imprimís, algunas entregas traen piezas para recortar que forman una imagen al final.</p></details>
+        <details><summary>¿Lo puedo regalar?</summary><p>Sí. En el pedido marcás que es un regalo y ponés el nombre y el mail de quien lo va a recibir.</p></details>
+        <details><summary>Vivo fuera de Argentina, ¿puedo sumarme?</summary><p>Sí. El valor es en dólares y se abona por PayPal. Los mails llegan igual a cualquier país.</p></details>
+        <details><summary>¿Y si un día no me llega el mail?</summary><p>Primero revisá la carpeta de spam o promociones. Si no está, escribime por WhatsApp o por mail y te lo reenvío.</p></details>
+        <details><summary>¿Para qué edad son las historias?</summary><p>Están pensadas para lectores adultos. Cada historia indica sus temas sensibles antes de la compra.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="contacto">
+  <div class="ancho">
+    <div>
+      <h3>Club de Correspondencia de Hernán Wuest</h3>
+      <p>Un club de ficción donde el lector es parte de la historia.</p>
+    </div>
+    <div>
+      <h3>Contacto</h3>
+      <ul id="zona-contacto"></ul>
+    </div>
+    <div>
+      <h3>Redes</h3>
+      <ul id="zona-redes-pie"></ul>
+    </div>
+    <p class="copy">© <span id="anio"></span> Hernán Wuest. Todas las historias son obras de ficción originales.</p>
+  </div>
+</footer>
+
+<!-- Carrito y pedido -->
+<div class="velo" id="velo" hidden></div>
+<aside class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="panel-titulo" hidden>
+  <header><h2 id="panel-titulo">Tu pedido</h2><button class="cerrar" id="cerrar-carrito" type="button" aria-label="Cerrar">✕</button></header>
+  <div class="contenido">
+    <div class="bloque">
+      <h3><b>1</b> Historias elegidas</h3>
+      <div id="items"></div>
+      <div class="opciones" role="radiogroup" aria-label="Moneda y medio de pago">
+        <label><input type="radio" name="moneda" id="moneda-ars" value="ARS" checked><div><strong>Estoy en Argentina</strong><span>Pago en pesos con Mercado Pago</span></div></label>
+        <label><input type="radio" name="moneda" id="moneda-usd" value="USD"><div><strong>Estoy fuera de Argentina</strong><span>Pago en dólares con PayPal</span></div></label>
+      </div>
+      <div class="total"><span>Total</span><b id="total">$0</b></div>
+    </div>
+
+    <form class="bloque" id="datos" novalidate>
+      <h3><b>2</b> Tus datos</h3>
+      <div class="dos">
+        <div class="campo"><label for="nombre">Nombre</label><input id="nombre" autocomplete="given-name" required></div>
+        <div class="campo"><label for="apellido">Apellido</label><input id="apellido" autocomplete="family-name" required></div>
+      </div>
+      <div class="campo"><label for="email">Mail donde querés recibir las cartas</label><input id="email" type="email" autocomplete="email" inputmode="email" required></div>
+      <div class="campo"><label for="inicio">¿Qué día querés empezar?</label><input id="inicio" type="date" required></div>
+      <label class="check"><input type="checkbox" id="regalo"> Es un regalo</label>
+      <div id="datos-regalo" class="dos" hidden>
+        <div class="campo"><label for="regalo-nombre">Nombre de quien lo recibe</label><input id="regalo-nombre"></div>
+        <div class="campo"><label for="regalo-email">Su mail</label><input id="regalo-email" type="email" inputmode="email"></div>
+      </div>
+    </form>
+
+    <div class="bloque">
+      <h3><b>3</b> Pagá</h3>
+      <p id="pago-texto"></p>
+      <a class="btn sol" id="pago-link" target="_blank" rel="noopener" hidden>Ir a pagar</a>
+    </div>
+
+    <div class="bloque">
+      <h3><b>4</b> Mandá el comprobante</h3>
+      <p class="nota">Este es tu pedido. Mandalo por WhatsApp o por mail y adjuntá la captura del pago en el mismo mensaje. La suscripción queda confirmada cuando te respondo.</p>
+      <textarea class="pedido" id="pedido" readonly aria-label="Detalle del pedido"></textarea>
+      <p class="error" id="error" role="alert" hidden></p>
+      <div class="enviar">
+        <a class="btn fuerte" id="enviar-wa" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        <a class="btn" id="enviar-mail">Enviar por mail</a>
+        <button class="btn chico" id="copiar" type="button">Copiar el pedido</button>
+      </div>
+      <p class="nota" id="contacto-texto"></p>
+    </div>
+  </div>
+</aside>
+
+<script src="datos.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+const hoy = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+const deISO = (iso) => { const [a, m, d] = iso.split("-").map(Number); return new Date(a, m - 1, d); };
+const aISO = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const corta = (d) => `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+const sumar = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const precio = (h, moneda) => moneda === "USD" ? (h.precioUSD ?? CLUB.precioUSD) : (h.precioARS ?? CLUB.precioARS);
+const plata = (n, moneda) => moneda === "USD" ? `USD ${n}` : `$${n.toLocaleString("es-AR")}`;
+const yaSalio = (h) => h.estado !== "proxima" || (h.disponibleDesde && deISO(h.disponibleDesde) <= hoy());
+const fechaSalida = (h) => { if (!h.disponibleDesde) return "Próximamente"; const d = deISO(h.disponibleDesde); return `Disponible desde el ${d.getDate()} de ${MESES[d.getMonth()]}`; };
+const wa = (texto) => `https://wa.me/${CLUB.whatsapp}?text=${encodeURIComponent(texto)}`;
+
+/* Tapas ilustradas */
+const ARTE = {
+  camara: `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="300" fill="#12333a"/><g opacity=".35" stroke="#cfe0e6" stroke-width="2"><line x1="40" y1="0" x2="10" y2="80"/><line x1="130" y1="20" x2="100" y2="100"/><line x1="250" y1="0" x2="220" y2="80"/><line x1="340" y1="40" x2="310" y2="120"/><line x1="380" y1="170" x2="350" y2="250"/><line x1="70" y1="190" x2="40" y2="270"/></g><g transform="rotate(-7 190 150)"><rect x="96" y="54" width="170" height="196" fill="#fbfaf6"/><rect x="110" y="68" width="142" height="142" fill="#b7c1bd"/><polygon points="110,210 252,210 252,176 196,150 140,150" fill="#5b4532"/><rect x="206" y="104" width="13" height="106" fill="#3b2a1c"/><circle cx="212" cy="98" r="12" fill="#d8b56a"/><circle cx="212" cy="98" r="8" fill="#f4eedd"/><path d="M212 98v-6M212 98l5 2" stroke="#222" stroke-width="1.6"/></g><g transform="rotate(9 300 210)"><rect x="232" y="176" width="130" height="84" fill="#efe5d0" stroke="#8c7a5c" stroke-width="2"/><path d="M232 176l65 46 65-46" fill="none" stroke="#8c7a5c" stroke-width="2"/></g></svg>`,
+  santa: `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="300" fill="#16284f"/><g fill="#fff" opacity=".9"><circle cx="40" cy="40" r="3"/><circle cx="120" cy="90" r="2"/><circle cx="200" cy="30" r="3"/><circle cx="290" cy="70" r="2"/><circle cx="360" cy="30" r="3"/><circle cx="330" cy="150" r="2"/><circle cx="70" cy="150" r="2"/><circle cx="240" cy="130" r="2"/></g><polygon points="200,46 244,150 156,150" fill="#1f5a3c"/><polygon points="200,92 258,206 142,206" fill="#1f5a3c"/><rect x="192" y="206" width="16" height="22" fill="#5a3a22"/><circle cx="200" cy="44" r="9" fill="#ffc83d"/><g><rect x="40" y="186" width="74" height="54" fill="#8a3a30"/><polygon points="32,186 77,152 122,186" fill="#f4f8fc"/><rect x="56" y="200" width="16" height="16" fill="#ffd27a"/><rect x="286" y="180" width="80" height="60" fill="#3f5d7a"/><polygon points="278,180 326,144 374,180" fill="#f4f8fc"/><rect x="330" y="196" width="18" height="18" fill="#ffd27a"/></g><path d="M0 232c80-16 150 10 220 0s120-8 180 0v68H0z" fill="#f4f8fc"/><g transform="rotate(-6 210 262)"><rect x="170" y="244" width="76" height="46" fill="#fbf7ee" stroke="#b3261e" stroke-width="4" stroke-dasharray="8 6"/></g></svg>`,
+  verano: `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="cv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3c467f"/><stop offset=".6" stop-color="#e58a6a"/><stop offset="1" stop-color="#f8c98a"/></linearGradient></defs><rect width="400" height="300" fill="url(#cv)"/><circle cx="280" cy="150" r="34" fill="#fff0c0"/><rect y="168" width="400" height="56" fill="#2f5f86"/><g stroke="#fff3d0" stroke-width="3" stroke-linecap="round" opacity=".7"><line x1="250" y1="182" x2="310" y2="182"/><line x1="230" y1="198" x2="330" y2="198"/><line x1="40" y1="206" x2="110" y2="206"/></g><path d="M0 222c70-18 130 8 200 0s130-12 200-4v82H0z" fill="#ead6a6"/><rect x="54" y="150" width="110" height="74" fill="#f4efe2"/><polygon points="42,150 109,104 176,150" fill="#a8553a"/><rect x="72" y="172" width="24" height="24" fill="#27325a"/><rect x="100" y="186" width="20" height="38" fill="#6e4f30"/><g transform="rotate(-8 290 262)"><rect x="244" y="250" width="92" height="20" fill="#2f5a45"/><rect x="244" y="266" width="92" height="5" fill="#f1ead6"/></g></svg>`,
+  carnaval: `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="300" fill="#14102a"/><g><circle cx="40" cy="50" r="7" fill="#12b5b0"/><circle cx="330" cy="40" r="9" fill="#ff8a1f"/><circle cx="366" cy="200" r="6" fill="#e91e63"/><circle cx="30" cy="230" r="8" fill="#ffd21f"/><circle cx="110" cy="26" r="4" fill="#7b3fe4"/><circle cx="260" cy="270" r="6" fill="#2ecc71"/><rect x="70" y="110" width="18" height="5" fill="#ff4d4d" transform="rotate(30 70 110)"/><rect x="300" y="120" width="18" height="5" fill="#1f8bff" transform="rotate(-40 300 120)"/><rect x="170" y="36" width="18" height="5" fill="#ffd21f" transform="rotate(70 170 36)"/><path d="M90 190c16-18 44-18 60 0c-16 18-44 18-60 0z" fill="#e91e63" transform="rotate(-30 120 190)"/><path d="M250 80c16-18 44-18 60 0c-16 18-44 18-60 0z" fill="#12b5b0" transform="rotate(24 280 80)"/></g><g transform="translate(150 132)"><rect x="6" y="52" width="88" height="8" fill="#e8e8ec"/><rect x="14" y="60" width="8" height="42" fill="#e8e8ec"/><rect x="78" y="60" width="8" height="42" fill="#e8e8ec"/><path d="M10 52V8a8 8 0 0 1 8-8h64a8 8 0 0 1 8 8v44z" fill="#fff"/><text x="50" y="36" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="26" fill="#14102a">14</text></g></svg>`
+};
+const tapa = (h, cinta) => `<div class="tapa">${ARTE[h.arte] || ARTE.camara}${cinta ? `<span class="cinta">${esc(cinta)}</span>` : ""}</div>`;
+const claves = (h) => `<ul class="claves" aria-label="Géneros y palabras clave">${h.claves.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>`;
+
+/* Carrito */
+let carrito = [];
+try { carrito = JSON.parse(localStorage.getItem("ccorr-carrito") || "[]").filter((id) => HISTORIAS.some((h) => h.id === id && yaSalio(h))); } catch (e) { carrito = []; }
+const guardar = () => { try { localStorage.setItem("ccorr-carrito", JSON.stringify(carrito)); } catch (e) {} };
+const enCarrito = (id) => carrito.includes(id);
+
+function botonCompra(h, clase) {
+  if (!yaSalio(h)) {
+    const msg = `Hola Hernán, quiero que me avises cuando salga "${h.titulo}" del Club de Correspondencia.`;
+    return `<a class="btn ${clase}" href="${wa(msg)}" target="_blank" rel="noopener">Avisame cuando salga</a>`;
+  }
+  return `<button class="btn fuerte ${clase}" type="button" data-sumar="${h.id}">${enCarrito(h.id) ? "Ver en el carrito" : "Sumar al carrito"}</button>`;
+}
+
+function pintar() {
+  const actual = HISTORIAS.find((h) => h.estado === "actual");
+  $("zona-actual").innerHTML = actual ? `
+    <article class="destacado">
+      ${tapa(actual, "Destacado del mes")}
+      <div class="dest-cuerpo">
+        <h3>${esc(actual.titulo)}</h3>
+        <p class="gancho">${esc(actual.gancho)}</p>
+        <p>${esc(actual.resumen)}</p>
+        <div><p class="subt">Qué trae</p><ul class="trae">${actual.trae.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
+        <div><p class="subt">Si te gusta</p>${claves(actual)}</div>
+        ${actual.fragmento ? `<details class="fragmento"><summary>Leé cómo empieza la primera carta</summary><p>${esc(actual.fragmento)}</p></details>` : ""}
+        ${actual.aviso ? `<p class="aviso">${esc(actual.aviso)}</p>` : ""}
+        <div class="precio">
+          <div><span class="num">${plata(precio(actual, "ARS"), "ARS")}</span><small>en Argentina, por Mercado Pago</small></div>
+          <div><span class="num">${plata(precio(actual, "USD"), "USD")}</span><small>desde otro país, por PayPal</small></div>
+          ${botonCompra(actual, "")}
+        </div>
+        <p class="nota">Dura ${actual.dias} ${esc(actual.unidad)} seguidos. Empezás el día que elijas.</p>
+      </div>
+    </article>` : `<p class="vacio">Este mes no hay una entrega destacada. Mirá las anteriores o lo que viene.</p>`;
+
+  const tarjeta = (h, cinta) => `
+    <article class="tarjeta">
+      ${tapa(h, cinta)}
+      <div class="cuerpo">
+        <h3>${esc(h.titulo)}</h3>
+        <p class="gancho" style="font-family:var(--display);font-style:italic;font-weight:600;color:var(--sello)">${esc(h.gancho)}</p>
+        <p class="res">${esc(h.resumen)}</p>
+        ${claves(h)}
+        ${h.aviso ? `<p class="aviso">${esc(h.aviso)}</p>` : ""}
+        <div class="pie"><span class="dur">${h.dias} ${esc(h.unidad)} · ${plata(precio(h, "ARS"), "ARS")} / ${plata(precio(h, "USD"), "USD")}</span>${botonCompra(h, "chico")}</div>
+      </div>
+    </article>`;
+  const prox = HISTORIAS.filter((h) => h.estado === "proxima");
+  $("zona-proximas").innerHTML = prox.length ? prox.map((h) => tarjeta(h, yaSalio(h) ? "Ya disponible" : fechaSalida(h))).join("") : `<p class="vacio">Pronto anunciamos la próxima historia.</p>`;
+  const ant = HISTORIAS.filter((h) => h.estado === "anterior");
+  $("zona-anteriores").innerHTML = ant.length ? ant.map((h) => tarjeta(h, "")).join("") : `<p class="vacio">Todavía no hay entregas anteriores: el club recién empieza. Cuando termine el mes, la entrega actual pasa a esta sección y se puede seguir pidiendo.</p>`;
+
+  $("cuenta").textContent = carrito.length;
+  pintarCarrito();
+}
+
+function monedaElegida() { return $("moneda-usd").checked ? "USD" : "ARS"; }
+
+function rangos() {
+  const ini = $("inicio").value ? deISO($("inicio").value) : sumar(hoy(), 1);
+  let cursor = ini;
+  return carrito.map((id) => {
+    const h = HISTORIAS.find((x) => x.id === id);
+    const desde = cursor, hasta = sumar(cursor, h.dias - 1);
+    cursor = sumar(hasta, 1);
+    return { h, desde, hasta };
+  });
+}
+
+function armarPedido() {
+  const m = monedaElegida(), rs = rangos();
+  const total = rs.reduce((s, r) => s + precio(r.h, m), 0);
+  const L = [];
+  L.push("PEDIDO · Club de Correspondencia de Hernán Wuest", "");
+  L.push(`Nombre y apellido: ${$("nombre").value.trim()} ${$("apellido").value.trim()}`.trimEnd());
+  L.push(`Mail para recibir las cartas: ${$("email").value.trim()}`);
+  if ($("regalo").checked) L.push(`ES UN REGALO para: ${$("regalo-nombre").value.trim()} (${$("regalo-email").value.trim()})`);
+  L.push("", "Suscripción:");
+  rs.forEach((r) => L.push(`- ${r.h.titulo}: ${r.h.dias} envíos, del ${corta(r.desde)} al ${corta(r.hasta)}`));
+  L.push("", `Total: ${plata(total, m)}`, `Medio de pago: ${m === "USD" ? "PayPal (dólares)" : "Mercado Pago (pesos)"}`, "", "Adjunto la captura del comprobante de pago.");
+  return L.join("\n");
+}
+
+function validar() {
+  if (!carrito.length) return "Sumá al menos una historia al carrito.";
+  if (!$("nombre").value.trim() || !$("apellido").value.trim()) return "Completá tu nombre y tu apellido.";
+  if (!/^\S+@\S+\.\S+$/.test($("email").value.trim())) return "Revisá el mail: ahí te van a llegar las cartas.";
+  if ($("regalo").checked && (!$("regalo-nombre").value.trim() || !/^\S+@\S+\.\S+$/.test($("regalo-email").value.trim()))) return "Completá el nombre y el mail de quien recibe el regalo.";
+  return "";
+}
+
+function pintarCarrito() {
+  const m = monedaElegida(), rs = rangos();
+  $("items").innerHTML = rs.length ? rs.map((r) => `
+    <div class="item"><div><strong>${esc(r.h.titulo)}</strong><span>${r.h.dias} ${esc(r.h.unidad)} · del ${corta(r.desde)} al ${corta(r.hasta)} · ${plata(precio(r.h, m), m)}</span></div>
+    <button class="quitar" type="button" data-quitar="${r.h.id}">Quitar</button></div>`).join("")
+    : `<p class="nota">Todavía no elegiste ninguna historia.</p>`;
+  $("total").textContent = plata(rs.reduce((s, r) => s + precio(r.h, m), 0), m);
+
+  const link = m === "USD" ? CLUB.linkPayPal : CLUB.linkMercadoPago;
+  const medio = m === "USD" ? "PayPal" : "Mercado Pago";
+  $("pago-link").hidden = !link;
+  if (link) { $("pago-link").href = link; $("pago-link").textContent = `Pagar con ${medio}`; $("pago-texto").textContent = `Aboná el total con ${medio} y guardá la captura del comprobante.`; }
+  else $("pago-texto").textContent = `Mandame el pedido de abajo y te paso por el mismo medio los datos para pagar con ${medio}.`;
+
+  const texto = armarPedido();
+  $("pedido").value = texto;
+  $("enviar-wa").href = wa(texto);
+  $("enviar-mail").href = `mailto:${CLUB.mail}?subject=${encodeURIComponent("Pedido · Club de Correspondencia")}&body=${encodeURIComponent(texto)}`;
+  $("contacto-texto").textContent = `Si los botones no abren nada, copiá el pedido y mandalo a WhatsApp ${CLUB.whatsappVisible} o a ${CLUB.mail}.`;
+}
+
+function abrir() { $("velo").hidden = false; $("panel").hidden = false; document.body.style.overflow = "hidden"; pintarCarrito(); $("cerrar-carrito").focus(); }
+function cerrar() { $("velo").hidden = true; $("panel").hidden = true; document.body.style.overflow = ""; $("abrir-carrito").focus(); }
+
+document.addEventListener("click", (e) => {
+  const ir = e.target.closest("[data-ir]");
+  if (ir) { e.preventDefault(); const d = $(ir.dataset.ir); if (d) d.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); return; }
+  const s = e.target.closest("[data-sumar]");
+  if (s) { if (!enCarrito(s.dataset.sumar)) { carrito.push(s.dataset.sumar); guardar(); } pintar(); abrir(); return; }
+  const q = e.target.closest("[data-quitar]");
+  if (q) { carrito = carrito.filter((id) => id !== q.dataset.quitar); guardar(); pintar(); return; }
+});
+$("abrir-carrito").addEventListener("click", abrir);
+$("cerrar-carrito").addEventListener("click", cerrar);
+$("velo").addEventListener("click", cerrar);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("panel").hidden) cerrar(); });
+$("panel").addEventListener("input", (e) => { if (e.target.id === "regalo") $("datos-regalo").hidden = !e.target.checked; $("error").hidden = true; pintarCarrito(); });
+$("datos").addEventListener("submit", (e) => e.preventDefault());
+["enviar-wa", "enviar-mail"].forEach((id) => $(id).addEventListener("click", (e) => {
+  const err = validar();
+  if (err) { e.preventDefault(); $("error").textContent = err; $("error").hidden = false; }
+}));
+$("copiar").addEventListener("click", async () => {
+  const err = validar();
+  if (err) { $("error").textContent = err; $("error").hidden = false; return; }
+  try { await navigator.clipboard.writeText($("pedido").value); $("copiar").textContent = "Pedido copiado"; }
+  catch (x) { $("pedido").focus(); $("pedido").select(); $("copiar").textContent = "Seleccionado: copialo a mano"; }
+});
+
+/* Contacto y redes */
+const redes = [
+  { letra: "T", nombre: "TikTok", usuario: "@" + CLUB.tiktok, url: `https://www.tiktok.com/@${CLUB.tiktok}` },
+  { letra: "I", nombre: "Instagram", usuario: "@" + CLUB.instagram, url: `https://www.instagram.com/${CLUB.instagram}` }
+];
+$("zona-redes").innerHTML = redes.map((r) => `<a class="red" href="${r.url}" target="_blank" rel="noopener"><i>${r.letra}</i><div>${r.nombre}<span>${esc(r.usuario)}</span></div></a>`).join("");
+$("zona-redes-pie").innerHTML = redes.map((r) => `<li><a href="${r.url}" target="_blank" rel="noopener">${r.nombre}: ${esc(r.usuario)}</a></li>`).join("");
+$("zona-contacto").innerHTML = `<li><a href="${wa("Hola Hernán, te escribo por el Club de Correspondencia.")}" target="_blank" rel="noopener">WhatsApp: ${esc(CLUB.whatsappVisible)}</a></li><li><a href="mailto:${CLUB.mail}">${esc(CLUB.mail)}</a></li>`;
+$("anio").textContent = new Date().getFullYear();
+
+/* Carta de prueba */
+$("zona-prueba").innerHTML = `<h3>${esc(CARTA_DE_PRUEBA.titulo)}</h3>` + CARTA_DE_PRUEBA.texto.split("\n\n").map((p) => `<p>${esc(p)}</p>`).join("") + `<p class="firma">${esc(CARTA_DE_PRUEBA.firma)}</p>`;
+$("prueba-nota").textContent = CARTA_DE_PRUEBA.nota + ". Si te quedaste con ganas, avisame y te escribo cuando salga.";
+$("prueba-aviso").href = wa(`Hola Hernán, leí la carta de prueba "${CARTA_DE_PRUEBA.titulo}" y quiero saber cómo sigue. Avisame cuando salga.`);
+
+/* Comentarios */
+$("zona-comentarios").innerHTML = COMENTARIOS.length
+  ? COMENTARIOS.map((c) => `<figure class="coment"><blockquote>“${esc(c.texto)}”</blockquote><figcaption>${esc(c.nombre)}${c.sobre ? `<span>${esc(c.sobre)}</span>` : ""}</figcaption></figure>`).join("")
+  : `<p class="vacio">Todavía no hay comentarios publicados: el club recién abre. Si ya leíste la carta de prueba o estás esperando una entrega, contame qué te pareció y lo sumo acá.</p>`;
+$("comentar").href = wa("Hola Hernán, quiero dejar un comentario para la página del Club de Correspondencia: ");
+
+const maniana = sumar(hoy(), 1);
+$("inicio").min = aISO(maniana);
+$("inicio").value = aISO(maniana);
+pintar();
+</script>
+</body>
+</html>
