@@ -612,12 +612,13 @@ $("copiar").addEventListener("click", async () => {
 
 /* Contacto y redes */
 const redes = [
+  { letra: "W", nombre: "Comunidad WhatsApp", usuario: "Novedades y avisos", url: CLUB.canalWhatsapp },
   { letra: "T", nombre: "TikTok", usuario: "@" + CLUB.tiktok, url: `https://www.tiktok.com/@${CLUB.tiktok}` },
   { letra: "I", nombre: "Instagram", usuario: "@" + CLUB.instagram, url: `https://www.instagram.com/${CLUB.instagram}` }
 ];
 $("zona-redes").innerHTML = redes.map((r) => `<a class="red" href="${r.url}" target="_blank" rel="noopener"><i>${r.letra}</i><div>${r.nombre}<span>${esc(r.usuario)}</span></div></a>`).join("");
 $("zona-redes-pie").innerHTML = redes.map((r) => `<li><a href="${r.url}" target="_blank" rel="noopener">${r.nombre}: ${esc(r.usuario)}</a></li>`).join("");
-$("zona-contacto").innerHTML = `<li><a href="${wa("Hola Hernán, te escribo por el Club de Correspondencia.")}" target="_blank" rel="noopener">WhatsApp: ${esc(CLUB.whatsappVisible)}</a></li><li><a href="mailto:${CLUB.mail}">${esc(CLUB.mail)}</a></li>`;
+$("zona-contacto").innerHTML = `<li><a href="${CLUB.canalWhatsapp}" target="_blank" rel="noopener">Comunidad de WhatsApp (novedades)</a></li><li><a href="${wa("Hola Hernán, te escribo por el Club de Correspondencia.")}" target="_blank" rel="noopener">WhatsApp: ${esc(CLUB.whatsappVisible)}</a></li><li><a href="mailto:${CLUB.mail}">${esc(CLUB.mail)}</a></li>`;
 $("anio").textContent = new Date().getFullYear();
 
 /* Carta de prueba */
