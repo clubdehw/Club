@@ -412,4 +412,237 @@ textarea.pedido { font-family: var(--maquina); font-size: 13.5px; line-height: 1
       <div id="info-inicio" style="background:#f4f1ea; border:1px solid #ded8cc; border-radius:10px; padding:10px 12px; font-size:14.5px; line-height:1.45;"></div>
       <label class="check"><input type="checkbox" id="regalo"> Es un regalo</label>
       <div id="datos-regalo" class="dos" hidden>
-        <div
+        <div class="campo"><label for="regalo-nombre">Nombre de quien lo recibe</label><input id="regalo-nombre"></div>
+        <div class="campo"><label for="regalo-email">Su mail</label><input id="regalo-email" type="email" inputmode="email"></div>
+      </div>
+    </form>
+
+    <div class="bloque">
+      <h3><b>3</b> Pagá por transferencia</h3>
+      <div style="background:#f4f1ea; border:1px solid #ded8cc; border-radius:10px; padding:14px; font-size:0.95rem; line-height:1.6;">
+        <div><strong>Billetera:</strong> Mercado Pago</div>
+        <div><strong>Titular:</strong> Sergio Hernán Speranza</div>
+        <div><strong>Alias:</strong> <span style="user-select:all; font-weight:600;">hw.club</span></div>
+      </div>
+      <p id="pago-texto" style="display:none;"></p>
+      <a class="btn sol" id="pago-link" target="_blank" rel="noopener" hidden>Ir a pagar</a>
+    </div>
+
+    <div class="bloque">
+      <h3><b>4</b> Mandá el comprobante</h3>
+      <p class="nota">Este es tu pedido. Mandalo por WhatsApp o por mail y adjuntá la captura del pago en el mismo mensaje. La suscripción queda confirmada cuando te respondo.</p>
+      <textarea class="pedido" id="pedido" readonly aria-label="Detalle del pedido"></textarea>
+      <p class="error" id="error" role="alert" hidden></p>
+      <div class="enviar">
+        <a class="btn fuerte" id="enviar-wa" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+        <a class="btn" id="enviar-mail">Enviar por mail</a>
+        <button class="btn chico" id="copiar" type="button">Copiar el pedido</button>
+      </div>
+      <p class="nota" id="contacto-texto"></p>
+    </div>
+  </div>
+</aside>
+
+<script src="datos.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+const hoy = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+const deISO = (iso) => { const [a, m, d] = iso.split("-").map(Number); return new Date(a, m - 1, d); };
+const aISO = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const corta = (d) => `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+const sumar = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const precio = (h, moneda) => moneda === "USD" ? (h.precioUSD ?? CLUB.precioUSD) : (h.precioARS ?? CLUB.precioARS);
+const plata = (n, moneda) => moneda === "USD" ? `USD ${n}` : `$${n.toLocaleString("es-AR")}`;
+const yaSalio = (h) => h.estado !== "proxima" || (h.disponibleDesde && deISO(h.disponibleDesde) <= hoy());
+const fechaSalida = (h) => { if (!h.disponibleDesde) return "Próximamente"; const d = deISO(h.disponibleDesde); return `Disponible desde el ${d.getDate()} de ${MESES[d.getMonth()]}`; };
+const wa = (texto) => `https://wa.me/${CLUB.whatsapp}?text=${encodeURIComponent(texto)}`;
+
+function proximaTanda() {
+  const h = hoy(), dia = h.getDate(), mes = h.getMonth(), anio = h.getFullYear();
+  if (dia < 4) return new Date(anio, mes, 5);
+  if (dia < 19) return new Date(anio, mes, 20);
+  return new Date(anio, mes + 1, 5);
+}
+
+/* Tapas ilustradas */
+const ARTE = {
+  camara: `<img src="Camara.png" alt="La Cámara Testigo" style="width:100%; height:100%; object-fit:cover; display:block;">`,
+  santa: `<img src="Santa .png" alt="Santa Secreto" style="width:100%; height:100%; object-fit:cover; display:block;">`,
+  verano: `<img src="Temporada.png" alt="Temporada de verano" style="width:100%; height:100%; object-fit:cover; display:block;">`,
+  carnaval: `<img src="Fila3.png" alt="Fila 3, asiento 14" style="width:100%; height:100%; object-fit:cover; display:block;">`,
+  buzon: `<img src="Buzon.png" alt="El buzón del tercero" style="width:100%; height:100%; object-fit:cover; display:block;">`
+};
+const tapa = (h, cinta) => `<div class="tapa">${ARTE[h.arte] || ARTE.camara}${cinta ? `<span class="cinta">${esc(cinta)}</span>` : ""}</div>`;
+const claves = (h) => `<ul class="claves" aria-label="Géneros y palabras clave">${h.claves.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>`;
+
+/* Carrito */
+let carrito = [];
+try { carrito = JSON.parse(localStorage.getItem("ccorr-carrito") || "[]").filter((id) => HISTORIAS.some((h) => h.id === id && yaSalio(h))); } catch (e) { carrito = []; }
+const guardar = () => { try { localStorage.setItem("ccorr-carrito", JSON.stringify(carrito)); } catch (e) {} };
+const enCarrito = (id) => carrito.includes(id);
+
+function botonCompra(h, clase) {
+  if (!yaSalio(h)) {
+    const msg = `Hola Hernán, quiero que me avises cuando salga "${h.titulo}" del Club de Correspondencia.`;
+    return `<a class="btn ${clase}" href="${wa(msg)}" target="_blank" rel="noopener">Avisame cuando salga</a>`;
+  }
+  return `<button class="btn fuerte ${clase}" type="button" data-sumar="${h.id}">${enCarrito(h.id) ? "Ver en el carrito" : "Sumar al carrito"}</button>`;
+}
+
+function pintar() {
+  const actual = HISTORIAS.find((h) => h.estado === "actual");
+  $("zona-actual").innerHTML = actual ? `
+    <article class="destacado">
+      ${tapa(actual, "Destacado del mes")}
+      <div class="dest-cuerpo">
+        <h3>${esc(actual.titulo)}</h3>
+        <p class="gancho">${esc(actual.gancho)}</p>
+        <p>${esc(actual.resumen)}</p>
+        <div><p class="subt">Qué trae</p><ul class="trae">${actual.trae.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
+        <div><p class="subt">Si te gusta</p>${claves(actual)}</div>
+        ${actual.fragmento ? `<details class="fragmento"><summary>Leé cómo empieza la primera carta</summary><p>${esc(actual.fragmento)}</p></details>` : ""}
+        ${actual.aviso ? `<p class="aviso">${esc(actual.aviso)}</p>` : ""}
+        <div class="precio">
+          <div><span class="num">${plata(precio(actual, "ARS"), "ARS")}</span><small>en Argentina, por transferencia</small></div>
+          <div><span class="num">${plata(precio(actual, "USD"), "USD")}</span><small>desde otro país, por PayPal</small></div>
+          ${botonCompra(actual, "")}
+        </div>
+        <p class="nota">Dura ${actual.dias} ${esc(actual.unidad)} seguidos. Los envíos comienzan los días 5 y 20 de cada mes.</p>
+      </div>
+    </article>` : `<p class="vacio">Este mes no hay una entrega destacada. Mirá las anteriores o lo que viene.</p>`;
+
+  const tarjeta = (h, cinta) => `
+    <article class="tarjeta">
+      ${tapa(h, cinta)}
+      <div class="cuerpo">
+        <h3>${esc(h.titulo)}</h3>
+        <p class="gancho" style="font-family:var(--display);font-style:italic;font-weight:600;color:var(--sello)">${esc(h.gancho)}</p>
+        <p class="res">${esc(h.resumen)}</p>
+        ${claves(h)}
+        ${h.aviso ? `<p class="aviso">${esc(h.aviso)}</p>` : ""}
+        <div class="pie"><span class="dur">${h.dias} ${esc(h.unidad)} · ${plata(precio(h, "ARS"), "ARS")} / ${plata(precio(h, "USD"), "USD")}</span>${botonCompra(h, "chico")}</div>
+      </div>
+    </article>`;
+  const prox = HISTORIAS.filter((h) => h.estado === "proxima");
+  $("zona-proximas").innerHTML = prox.length ? prox.map((h) => tarjeta(h, yaSalio(h) ? "Ya disponible" : fechaSalida(h))).join("") : `<p class="vacio">Pronto anunciamos la próxima historia.</p>`;
+  const ant = HISTORIAS.filter((h) => h.estado === "anterior");
+  $("zona-anteriores").innerHTML = ant.length ? ant.map((h) => tarjeta(h, "")).join("") : `<p class="vacio">Todavía no hay entregas anteriores: el club recién empieza. Cuando termine el mes, la entrega actual pasa a esta sección y se puede seguir pidiendo.</p>`;
+
+  $("cuenta").textContent = carrito.length;
+  pintarCarrito();
+}
+
+function monedaElegida() { return $("moneda-usd").checked ? "USD" : "ARS"; }
+
+function rangos() {
+  let cursor = proximaTanda();
+  return carrito.map((id) => {
+    const h = HISTORIAS.find((x) => x.id === id);
+    const desde = cursor, hasta = sumar(cursor, h.dias - 1);
+    cursor = sumar(hasta, 1);
+    return { h, desde, hasta };
+  });
+}
+
+function armarPedido() {
+  const m = monedaElegida(), rs = rangos();
+  const total = rs.reduce((s, r) => s + precio(r.h, m), 0);
+  const L = [];
+  L.push("PEDIDO · Club de Correspondencia de Hernán Wuest", "");
+  L.push(`Nombre y apellido: ${$("nombre").value.trim()} ${$("apellido").value.trim()}`.trimEnd());
+  L.push(`Mail para recibir las cartas: ${$("email").value.trim()}`);
+  if ($("regalo").checked) L.push(`ES UN REGALO para: ${$("regalo-nombre").value.trim()} (${$("regalo-email").value.trim()})`);
+  L.push("", "Suscripción:");
+  rs.forEach((r) => L.push(`- ${r.h.titulo}: ${r.h.dias} envíos, del ${corta(r.desde)} al ${corta(r.hasta)}`));
+  L.push("", `Total: ${plata(total, m)}`, `Medio de pago: ${m === "USD" ? "PayPal (dólares)" : "Transferencia bancaria (pesos)"}`, "", "Adjunto la captura del comprobante de pago.");
+  return L.join("\n");
+}
+
+function validar() {
+  if (!carrito.length) return "Sumá al menos una historia al carrito.";
+  if (!$("nombre").value.trim() || !$("apellido").value.trim()) return "Completá tu nombre y tu apellido.";
+  if (!/^\S+@\S+\.\S+$/.test($("email").value.trim())) return "Revisá el mail: ahí te van a llegar las cartas.";
+  if ($("regalo").checked && (!$("regalo-nombre").value.trim() || !/^\S+@\S+\.\S+$/.test($("regalo-email").value.trim()))) return "Completá el nombre y el mail de quien recibe el regalo.";
+  return "";
+}
+
+function pintarCarrito() {
+  const m = monedaElegida(), rs = rangos();
+  const ini = proximaTanda(), cierre = sumar(ini, -1);
+  $("info-inicio").innerHTML = `<strong>Inicio de envíos:</strong> ${ini.getDate()} de ${MESES[ini.getMonth()]} <span style="color:var(--tinta-suave);">(cierra el ${cierre.getDate()}/${String(cierre.getMonth() + 1).padStart(2, "0")})</span>`;
+
+  $("items").innerHTML = rs.length ? rs.map((r) => `
+    <div class="item"><div><strong>${esc(r.h.titulo)}</strong><span>${r.h.dias} ${esc(r.h.unidad)} · del ${corta(r.desde)} al ${corta(r.hasta)} · ${plata(precio(r.h, m), m)}</span></div>
+    <button class="quitar" type="button" data-quitar="${r.h.id}">Quitar</button></div>`).join("")
+    : `<p class="nota">Todavía no elegiste ninguna historia.</p>`;
+  $("total").textContent = plata(rs.reduce((s, r) => s + precio(r.h, m), 0), m);
+
+  const link = m === "USD" ? CLUB.linkPayPal : CLUB.linkMercadoPago;
+  const medio = m === "USD" ? "PayPal" : "Mercado Pago";
+  $("pago-link").hidden = !link;
+  if (link) { $("pago-link").href = link; $("pago-link").textContent = `Pagar con ${medio}`; $("pago-texto").textContent = `Aboná el total con ${medio} y guardá la captura del comprobante.`; }
+  else $("pago-texto").textContent = `Mandame el pedido de abajo y te paso por el mismo medio los datos para pagar con ${medio}.`;
+
+  const texto = armarPedido();
+  $("pedido").value = texto;
+  $("enviar-wa").href = wa(texto);
+  $("enviar-mail").href = `mailto:${CLUB.mail}?subject=${encodeURIComponent("Pedido · Club de Correspondencia")}&body=${encodeURIComponent(texto)}`;
+  $("contacto-texto").textContent = `Si los botones no abren nada, copiá el pedido y mandalo a WhatsApp ${CLUB.whatsappVisible} o a ${CLUB.mail}.`;
+}
+
+function abrir() { $("velo").hidden = false; $("panel").hidden = false; document.body.style.overflow = "hidden"; pintarCarrito(); $("cerrar-carrito").focus(); }
+function cerrar() { $("velo").hidden = true; $("panel").hidden = true; document.body.style.overflow = ""; $("abrir-carrito").focus(); }
+
+document.addEventListener("click", (e) => {
+  const ir = e.target.closest("[data-ir]");
+  if (ir) { e.preventDefault(); const d = $(ir.dataset.ir); if (d) d.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); return; }
+  const s = e.target.closest("[data-sumar]");
+  if (s) { if (!enCarrito(s.dataset.sumar)) { carrito.push(s.dataset.sumar); guardar(); } pintar(); abrir(); return; }
+  const q = e.target.closest("[data-quitar]");
+  if (q) { carrito = carrito.filter((id) => id !== q.dataset.quitar); guardar(); pintar(); return; }
+});
+$("abrir-carrito").addEventListener("click", abrir);
+$("cerrar-carrito").addEventListener("click", cerrar);
+$("velo").addEventListener("click", cerrar);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("panel").hidden) cerrar(); });
+$("panel").addEventListener("input", (e) => { if (e.target.id === "regalo") $("datos-regalo").hidden = !e.target.checked; $("error").hidden = true; pintarCarrito(); });
+$("datos").addEventListener("submit", (e) => e.preventDefault());
+["enviar-wa", "enviar-mail"].forEach((id) => $(id).addEventListener("click", (e) => {
+  const err = validar();
+  if (err) { e.preventDefault(); $("error").textContent = err; $("error").hidden = false; }
+}));
+$("copiar").addEventListener("click", async () => {
+  const err = validar();
+  if (err) { $("error").textContent = err; $("error").hidden = false; return; }
+  try { await navigator.clipboard.writeText($("pedido").value); $("copiar").textContent = "Pedido copiado"; }
+  catch (x) { $("pedido").focus(); $("pedido").select(); $("copiar").textContent = "Seleccionado: copialo a mano"; }
+});
+
+/* Contacto y redes */
+const redes = [
+  { letra: "W", nombre: "Comunidad WhatsApp", usuario: "Novedades y avisos", url: CLUB.canalWhatsapp },
+  { letra: "T", nombre: "TikTok", usuario: "@" + CLUB.tiktok, url: `https://www.tiktok.com/@${CLUB.tiktok}` },
+  { letra: "I", nombre: "Instagram", usuario: "@" + CLUB.instagram, url: `https://www.instagram.com/${CLUB.instagram}` }
+];
+$("zona-redes").innerHTML = redes.map((r) => `<a class="red" href="${r.url}" target="_blank" rel="noopener"><i>${r.letra}</i><div>${r.nombre}<span>${esc(r.usuario)}</span></div></a>`).join("");
+$("zona-redes-pie").innerHTML = redes.map((r) => `<li><a href="${r.url}" target="_blank" rel="noopener">${r.nombre}: ${esc(r.usuario)}</a></li>`).join("");
+$("zona-contacto").innerHTML = `<li><a href="${CLUB.canalWhatsapp}" target="_blank" rel="noopener">Comunidad de WhatsApp (novedades)</a></li><li><a href="${wa("Hola Hernán, te escribo por el Club de Correspondencia.")}" target="_blank" rel="noopener">WhatsApp: ${esc(CLUB.whatsappVisible)}</a></li><li><a href="mailto:${CLUB.mail}">${esc(CLUB.mail)}</a></li>`;
+$("anio").textContent = new Date().getFullYear();
+
+/* Carta de prueba */
+$("zona-prueba").innerHTML = `<h3>${esc(CARTA_DE_PRUEBA.titulo)}</h3>` + CARTA_DE_PRUEBA.texto.split("\n\n").map((p) => `<p>${esc(p)}</p>`).join("") + `<p class="firma">${esc(CARTA_DE_PRUEBA.firma)}</p>`;
+$("prueba-nota").textContent = CARTA_DE_PRUEBA.nota + ". Si te quedaste con ganas, avisame y te escribo cuando salga.";
+$("prueba-aviso").href = wa(`Hola Hernán, leí la carta de prueba "${CARTA_DE_PRUEBA.titulo}" y quiero saber cómo sigue. Avisame cuando salga.`);
+
+/* Comentarios */
+$("zona-comentarios").innerHTML = COMENTARIOS.length
+  ? COMENTARIOS.map((c) => `<figure class="coment"><blockquote>“${esc(c.texto)}”</blockquote><figcaption>${esc(c.nombre)}${c.sobre ? `<span>${esc(c.sobre)}</span>` : ""}</figcaption></figure>`).join("")
+  : `<p class="vacio">Todavía no hay comentarios publicados: el club recién abre. Si ya leíste la carta de prueba o estás esperando una entrega, contame qué te pareció y lo sumo acá.</p>`;
+$("comentar").href = wa("Hola Hernán, quiero dejar un comentario para la página del Club de Correspondencia: ");
+
+pintar();
+</script>
+</body>
+</html>
