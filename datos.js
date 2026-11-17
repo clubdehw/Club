@@ -83,7 +83,7 @@ const HISTORIAS = [
   {
     id: "el-buzon-del-tercero",
     titulo: "El buzón del tercero",
-    estado: "anterior",
+    estado: "proxima",
     disponibleDesde: "2026-11-16",
     arte: "buzon",
     gancho: "Alguien vive en tu antigua casa. Y tiene nueve cartas que son tuyas.",
