@@ -395,8 +395,8 @@ textarea.pedido { font-family: var(--maquina); font-size: 13.5px; line-height: 1
       <h3><b>1</b> Historias elegidas</h3>
       <div id="items"></div>
       <div class="opciones" role="radiogroup" aria-label="Moneda y medio de pago">
-        <label><input type="radio" name="moneda" id="moneda-ars" value="ARS" checked><div><strong>Estoy en Argentina</strong><span>Pago en pesos con Mercado Pago</span></div></label>
-        <label><input type="radio" name="moneda" id="moneda-usd" value="USD"><div><strong>Estoy fuera de Argentina</strong><span>Pago en dólares con PayPal</span></div></label>
+        <label><input type="radio" name="moneda" id="moneda-ars" value="ARS" checked><div><strong>Transferencia bancaria</strong><span>Pago en pesos argentinos</span></div></label>
+        <label style="display:none;"><input type="radio" name="moneda" id="moneda-usd" value="USD"><div><strong>Estoy fuera de Argentina</strong><span>Pago en dólares con PayPal</span></div></label>
       </div>
       <div class="total"><span>Total</span><b id="total">$0</b></div>
     </div>
@@ -417,8 +417,13 @@ textarea.pedido { font-family: var(--maquina); font-size: 13.5px; line-height: 1
     </form>
 
     <div class="bloque">
-      <h3><b>3</b> Pagá</h3>
-      <p id="pago-texto"></p>
+      <h3><b>3</b> Pagá por transferencia</h3>
+      <div style="background:#f4f1ea; border:1px solid #ded8cc; border-radius:10px; padding:14px; font-size:0.95rem; line-height:1.6;">
+        <div><strong>Billetera:</strong> Mercado Pago</div>
+        <div><strong>Titular:</strong> Sergio Hernán Speranza</div>
+        <div><strong>Alias:</strong> <span style="user-select:all; font-weight:600;">hw.club</span></div>
+      </div>
+      <p id="pago-texto" style="display:none;"></p>
       <a class="btn sol" id="pago-link" target="_blank" rel="noopener" hidden>Ir a pagar</a>
     </div>
 
