@@ -493,7 +493,8 @@ function botonCompra(h, clase) {
 }
 
 function pintar() {
-  const actual = HISTORIAS.find((h) => h.estado === "actual");
+  const salidas = HISTORIAS.filter(yaSalio).sort((a, b) => (b.disponibleDesde || "").localeCompare(a.disponibleDesde || ""));
+  const actual = salidas[0];
   $("zona-actual").innerHTML = actual ? `
     <article class="destacado">
       ${tapa(actual, "Destacado del mes")}
@@ -526,10 +527,10 @@ function pintar() {
         <div class="pie"><span class="dur">${h.dias} ${esc(h.unidad)} · ${plata(precio(h, "ARS"), "ARS")} / ${plata(precio(h, "USD"), "USD")}</span>${botonCompra(h, "chico")}</div>
       </div>
     </article>`;
-  const prox = HISTORIAS.filter((h) => h.estado === "proxima");
-  $("zona-proximas").innerHTML = prox.length ? prox.map((h) => tarjeta(h, yaSalio(h) ? "Ya disponible" : fechaSalida(h))).join("") : `<p class="vacio">Pronto anunciamos la próxima historia.</p>`;
-  const ant = HISTORIAS.filter((h) => h.estado === "anterior");
-  $("zona-anteriores").innerHTML = ant.length ? ant.map((h) => tarjeta(h, "")).join("") : `<p class="vacio">Todavía no hay entregas anteriores: el club recién empieza. Cuando termine el mes, la entrega actual pasa a esta sección y se puede seguir pidiendo.</p>`;
+  const prox = HISTORIAS.filter((h) => !yaSalio(h)).sort((a, b) => (a.disponibleDesde || "9999").localeCompare(b.disponibleDesde || "9999"));
+  $("zona-proximas").innerHTML = prox.length ? prox.map((h) => tarjeta(h, fechaSalida(h))).join("") : `<p class="vacio">Pronto anunciamos la próxima historia.</p>`;
+  const ant = salidas.slice(1);
+  $("zona-anteriores").innerHTML = ant.length ? ant.map((h) => tarjeta(h, "")).join("") : `<p class="vacio">Todavía no hay entregas anteriores: el club recién empieza. Cuando salga la próxima historia, esta pasa acá y se puede seguir pidiendo.</p>`;
 
   $("cuenta").textContent = carrito.length;
   pintarCarrito();
