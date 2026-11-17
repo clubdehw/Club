@@ -456,7 +456,7 @@ const corta = (d) => `${String(d.getDate()).padStart(2, "0")}/${String(d.getMont
 const sumar = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 const precio = (h, moneda) => moneda === "USD" ? (h.precioUSD ?? CLUB.precioUSD) : (h.precioARS ?? CLUB.precioARS);
 const plata = (n, moneda) => moneda === "USD" ? `USD ${n}` : `$${n.toLocaleString("es-AR")}`;
-const yaSalio = (h) => h.estado !== "proxima" || (h.disponibleDesde && deISO(h.disponibleDesde) <= hoy());
+const yaSalio = (h) => h.disponibleDesde ? deISO(h.disponibleDesde) <= hoy() : h.estado !== "proxima";
 const fechaSalida = (h) => { if (!h.disponibleDesde) return "Próximamente"; const d = deISO(h.disponibleDesde); return `Disponible desde el ${d.getDate()} de ${MESES[d.getMonth()]}`; };
 const wa = (texto) => `https://wa.me/${CLUB.whatsapp}?text=${encodeURIComponent(texto)}`;
 
