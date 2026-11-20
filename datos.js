@@ -19,7 +19,7 @@ const CLUB = {
   mail: "clubdecorrespondenciahw@gmail.com",
   tiktok: "hernanwuestok",
   instagram: "hernanwuest",
-  precioARS: 4999,                        // precio general en pesos
+  precioARS: 3999,                        // precio general en pesos
   precioUSD: 4,                           // precio general en dólares
   linkMercadoPago: "",                    // pegá acá tu link de pago de Mercado Pago
   linkPayPal: "",                         // pegá acá tu link de PayPal
